@@ -14,7 +14,7 @@ public class GUI implements ActionListener {
     private static JLabel label;
     private static JTextArea textArea;
     private static JButton button;
-    private Grammar grammar = new Grammar();
+    private Grammar grammar;
 
     public GUI() {
 
@@ -52,6 +52,8 @@ public class GUI implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        Grammar tempGrammar = new Grammar();
+        
         String input = textArea.getText();
         String[] tokenizedLines = input.split("\\r?\\n");
 
@@ -102,10 +104,11 @@ public class GUI implements ActionListener {
             }*/
 
             Production tempProduction = new Production(tempHead, tempBody);        // ho generato la produzione di una singola riga
-            this.grammar.addProduction(tempProduction);
+            tempGrammar.addProduction(tempProduction);                             // in questo modo non si salvano più grammatiche in memoria
             
         }
 
+        this.grammar = new Grammar(tempGrammar.getProductionList());
         System.out.println(grammar.toString());
 
     }
