@@ -6,15 +6,13 @@ public class Production {
     private Symbol head;
     private List<Symbol> body = new ArrayList<>();
 
-    public Production(Symbol head, List<Symbol> body) { // una produzione si definisce da una testa, un NonTerminal, e un corpo, una sequenza di Terminal e NonTerminal
-
-        if (head.getIsTerminal() == true) throw new IllegalArgumentException(); // la testa non può essere un terminale
+    public Production(Symbol head, List<Symbol> body) { // una produzione si definisce da una testa, un NonTerminal, e un corpo, una sequenza di Symbol
         this.setHead(head);
         this.setBody(body);
-
     }
 
     public void setHead(Symbol head) {
+        if (head.getIsTerminal()) throw new IllegalArgumentException(); // la testa non può essere un terminale
         this.head = head;
     }
 

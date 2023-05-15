@@ -53,7 +53,7 @@ public class GUI implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         Grammar tempGrammar = new Grammar();
-        
+
         String input = textArea.getText();
         String[] tokenizedLines = input.split("\\r?\\n");
 
@@ -109,7 +109,9 @@ public class GUI implements ActionListener {
         }
 
         this.grammar = new Grammar(tempGrammar.getProductionList());
-        System.out.println(grammar.toString());
+        System.out.println(grammar);
+
+        System.out.println(grammar.deriveEpsilon(grammar.getProduction(2).getHead()));
 
     }
 

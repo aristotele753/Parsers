@@ -59,27 +59,33 @@ public class Grammar {
 
         for (int i = 0; i < getProductionList().size(); i++) {
 
-            Production tempProduction = getProduction(i);
-
+            if (getProductionList().size() == 1)                 // vedo se la produzione ha la forma "nonTerminal -> epsilon"
+                return produceEpsilon(getProductionList().get(0).getHead());
+        
+            Production tempProduction = getProduction(i);        // in caso contrario, significa che la forma "nonTerminal -> Y1, Y2, ..."
             boolean pass = false;
-            for (Symbol symbol : tempProduction.getBody()) { // se incontro anche un solo terminale nella produzione, non puà derivare epsilon nella produzione i
-                if (symbol.getIsTerminal())
-                    pass = true; // se il simbolo è un terminale, si imposta il flag a true per saltare la produzione i
-            }
 
-            if (pass) break;
+            if (tempProduction.getHead().equals(nonTerminal)) {  // se la testa della produzione è "nonTerminal -> ... "
 
-            // se il break si è superato, significa che il corpo è costituito SOLO da non terminale che potrebbero derivare epsilon
-            // una produzione X -> Y1 Y2 ... Yk deriva epsilon se tutte le Y derivano epsilon
-            // la procedura si richiama finché non si giunge al caso base "Y_i -> eps"
-            if (tempProduction.getHead().equals(nonTerminal)) { // se la produzione ha "nonTerminal -> ... "
-                
+                for (Symbol symbol : tempProduction.getBody()) { // se nel corpo della produzione i è presente un terminale, non può derivare epsilon
+                    if (symbol.getIsTerminal() && !symbol.getIsEpsilon())
+                        pass = true;                             // se il simbolo è un terminale, si imposta il flag a true per saltare la produzione i
+                }
+                if (pass) continue;                              // passa alla produzione i + 1 
+
+                /*
+                    Se il continue si è superato, significa che il corpo è costituito SOLO da non terminali che POTREBBERO
+                    derivare epsilon, si avrà una produzione nella forma "nonTerminal -> Y1 Y2 ... Yn": nonTerminal
+                    deriva epsilon solo se tutte le Yi derivano epsilon; dunque, la procedura si richiama RICORSIVAMENTE
+                    finché non si giunge al caso base "Yn -> epsilon". Infatti, se l'ultimo non terminale Yn supera tutti i
+                    controlli, significa che tutti i precedenti Yi derivano anch'essi epsilon. 
+                */
+
                 for (Symbol symbol : tempProduction.getBody()) { // sono tutti non terminali
-                    
-                    // caso base, Y_i -> ...
-                    if (produceEpsilon(symbol)) return true;
+
+                    // caso base, Yn -> epsilon
                     // passo ricorsivo
-                    else return deriveEpsilon(symbol);
+                    //else return deriveEpsilon(symbol);
 
                 }
 
@@ -93,7 +99,11 @@ public class Grammar {
 
     private boolean produceEpsilon(Symbol nonTerminal) {
 
-        if (nonTerminal.getIsTerminal()) throw new IllegalArgumentException();
+        try {
+            if (nonTerminal.getIsTerminal()) throw new IllegalArgumentException();   
+        } catch (IllegalArgumentException e) {
+            System.out.println("Eccezione in produceEpsilon");
+        }
 
         for (int i = 0; i < getProductionList().size(); i++) {
             Production tempProduction = getProduction(i); 
