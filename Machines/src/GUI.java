@@ -111,7 +111,9 @@ public class GUI implements ActionListener {
         this.grammar = new Grammar(tempGrammar.getProductionList());
         System.out.println(grammar);
 
-        System.out.println(grammar.deriveEpsilon(grammar.getProduction(2).getHead()));
+        System.out.println(grammar.getProduction(2).getHead() + ": " + grammar.deriveEpsilon(grammar.getProduction(2).getHead()));
+        System.out.println(grammar.getProduction(3).getHead() + ": " + grammar.deriveEpsilon(grammar.getProduction(3).getHead()));
+        System.out.println(grammar.getProduction(4).getHead() + ": " + grammar.deriveEpsilon(grammar.getProduction(4).getHead()));
 
     }
 
