@@ -3,8 +3,9 @@ import java.util.ArrayList;
 
 public class Grammar {
     
-    //Map<Symbol, Set<Symbol>> FIRSTSet = new HashMap<>();
     private List<Production> productionList = new ArrayList<>();
+    private static int counterProduction = 0;
+    private static int counterSymbol = 0;
 
     public Grammar() {
 
@@ -55,22 +56,25 @@ public class Grammar {
 
     public boolean deriveEpsilon(Symbol nonTerminal) {
 
+        // counterProduction = 0
+        // counterSymbol = 0
+        // il contatore static dovrebbe resettarsi in determinate condizioni.. è da capire quali
+
         if (nonTerminal.getIsTerminal())
             throw new IllegalArgumentException();
 
-        for (Production production : getProductionList()) {
+        while (counterProduction < getProductionList().size()) { // sfrutto la variabile statica
 
-            if (production.getBody().size() == 1)            // vedo se la produzione ha la forma "nonTerminal -> epsilon"
-                return produceEpsilon(production.getHead()); // caso base
-
-            boolean pass = false;                            // in caso contrario, significa che la forma "nonTerminal -> Y1, Y2, ..."
+            Production production = getProduction(counterProduction);
+            counterProduction++;
+            
+            boolean pass = false;
 
             if (production.getHead().equals(nonTerminal)) {  // se la testa della produzione è "nonTerminal -> ... "
 
-                for (Symbol symbol : production.getBody()) { // se nel corpo della produzione è presente un terminale, non può derivare epsilon
+                for (Symbol symbol : production.getBody())   // se nel corpo della produzione è presente un terminale, non può derivare epsilon
                     if (symbol.getIsTerminal() && !symbol.getIsEpsilon())
                         pass = true;                         // se il simbolo è un terminale, si imposta il flag a true per saltare la produzione attuale
-                }
                 if (pass) continue;                          // passa alla produzione successiva 
 
                 /*
@@ -81,14 +85,20 @@ public class Grammar {
                     controlli, significa che tutti i precedenti Yi derivano anch'essi epsilon. 
                 */
 
-                for (Symbol symbol : production.getBody()) { // sono tutti non terminali
+                while (counterSymbol < production.getBody().size()) { // sono tutti non terminali
 
-                    return deriveEpsilon(symbol);
-
+                    Symbol symbol = production.getBody().get(counterSymbol);
+                    if (production.getBody().size() == 1)             // vedo se la produzione ha la forma "nonTerminal -> epsilon"
+                        return produceEpsilon(production.getHead());  // caso base
+                    else {
+                        counterSymbol++;
+                        System.out.println("Porcodio");             // passo ricorsivo
+                        return deriveEpsilon(symbol);
+                    }
                 }
 
             }
-
+            
         }
 
         return false;    
